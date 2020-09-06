@@ -25,11 +25,11 @@ impl Job {
     pub fn calc_fin(&self, time: u32) {
         self.finish.set(self.duration + time);
     }
-    /*
-    pub fn reset_fin(/**/) {
-        
+    
+    pub fn reset_fin(&self) {
+        self.finish.set(0);
     }
-    */
+    
 }
 /*
 pub fn prep_jobs(/**/) -> {
@@ -68,12 +68,16 @@ mod tests {
         test_job.calc_fin(5);
         assert_eq!(test_job.finish.get(), 6);
     }
-/*
+
     #[test]
     fn reset_fin_test() {
-        
+        let test_job = Job::new(4, 1);
+        test_job.calc_fin(5);
+        assert_eq!(test_job.finish.get(), 6);
+        test_job.reset_fin();
+        assert_eq!(test_job.finish.get(), 0);
     }
-
+/*
     #[test]
     fn prep_jobs_test() {
         
