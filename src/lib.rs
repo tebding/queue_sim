@@ -21,11 +21,11 @@ impl Job {
             wait,
        }
     }
-   /* 
-    pub fn calc_fin(/**/) {
-        
-    }
     
+    pub fn calc_fin(&self, time: u32) {
+        self.finish.set(self.duration + time);
+    }
+    /*
     pub fn reset_fin(/**/) {
         
     }
@@ -61,12 +61,14 @@ mod tests {
         assert_eq!(test_job.finish.get(), 0);
         assert_eq!(test_job.wait.get(), 0);
     }
-/*
+
     #[test]
     fn calc_fin_test() {
-        
+        let test_job = Job::new(4, 1);
+        test_job.calc_fin(5);
+        assert_eq!(test_job.finish.get(), 6);
     }
-
+/*
     #[test]
     fn reset_fin_test() {
         
