@@ -22,10 +22,12 @@ impl Job {
        }
     }
     
+    //sets the 'finish' field to the simulated completion time
     pub fn calc_fin(&self, time: u32) {
         self.finish.set(self.duration + time);
     }
     
+    //sets the 'finish' field back to 0
     pub fn reset_fin(&self) {
         self.finish.set(0);
     }
@@ -100,6 +102,13 @@ mod tests {
         assert_eq!(jobs[1].duration, 1);
         assert_eq!(jobs[1].finish.get(), 0);
         assert_eq!(jobs[1].wait.get(), 0);
+
+    }
+    #[test]
+    #[should_panic]
+    fn prep_jobs_fail_test() {
+        let test_fail_input = String::from("1 a");
+        let jobs = prep_jobs(test_fail_input);
     }
 /*
     #[test]
