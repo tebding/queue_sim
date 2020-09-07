@@ -1,7 +1,7 @@
 //lib.rs
 
-//note: regular Vec<> would work just as well, but VecDeque is a bit neater
-use std::{cell::Cell, collections::VecDeque};
+//note: regular Vec<> would work just as well, but Vec is a bit neater
+use std::cell::Cell;
 
 pub struct Job {
     pub arrival: u32,
@@ -31,11 +31,21 @@ impl Job {
     }
     
 }
-/*
-pub fn prep_jobs(/**/) -> {
-    
+//handles reading and parsing of input file, returning a queue of jobs
+pub fn prep_jobs(joblist: String) -> Vec<Job> {
+    let mut jobs: Vec<Job> = Vec::new();
+    for line in joblist.lines() {
+        let mut nums = line.split_whitespace();
+        let a = nums.next().expect("invalid input")
+            .parse::<u32>().expect("invalid input");
+        let d = nums.next().expect("invalid input")
+            .parse::<u32>().expect("invalid input");
+        let new_job = Job::new(a, d);
+        jobs.push(new_job);
+    }
+    return jobs;
 }
-
+/*
 pub fn dequeue(/**/) {
     
 }
@@ -77,12 +87,21 @@ mod tests {
         test_job.reset_fin();
         assert_eq!(test_job.finish.get(), 0);
     }
-/*
+
     #[test]
     fn prep_jobs_test() {
-        
+        let test_input = String::from("1 2\n3 1");
+        let jobs = prep_jobs(test_input);
+        assert_eq!(jobs[0].arrival, 1);
+        assert_eq!(jobs[0].duration, 2);
+        assert_eq!(jobs[0].finish.get(), 0);
+        assert_eq!(jobs[0].wait.get(), 0);
+        assert_eq!(jobs[1].arrival, 3);
+        assert_eq!(jobs[1].duration, 1);
+        assert_eq!(jobs[1].finish.get(), 0);
+        assert_eq!(jobs[1].wait.get(), 0);
     }
-
+/*
     #[test]
     fn dequeue_test() {
         
