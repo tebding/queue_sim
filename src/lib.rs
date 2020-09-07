@@ -1,6 +1,5 @@
 //lib.rs
 
-//note: regular Vec<> would work just as well, but Vec is a bit neater
 use std::cell::Cell;
 
 pub struct Job {
@@ -47,16 +46,9 @@ pub fn prep_jobs(joblist: String) -> Vec<Job> {
     }
     return jobs;
 }
-/*
-pub fn dequeue(/**/) {
-    
-}
 
-pub fn enqueue(/**/) {
-    
-}
-
-pub fn find_queue(/**/) {
+//finds the processor queue with the fewest items in it
+/*fn find_shortest_queue(/**/) {
     
 }
 */
@@ -112,17 +104,7 @@ mod tests {
     }
 /*
     #[test]
-    fn dequeue_test() {
-        
-    }
-
-    #[test]
-    fn enqueue_test() {
-        
-    }
-
-    #[test]
-    fn find_queue_test() {
+    fn find_shortest_queue_test() {
         
     }
 */
