@@ -64,14 +64,14 @@ impl Processor {
         }
     }
     
-    /*
-    pub fn enqueue(&self, job: Job) {
-        let target = find_shortest_q(self);
+    //takes the input job and 
+    pub fn enqueue(&mut self, job: Job) {
+        let target = self.find_shortest_q();
+        self.queues[target].push(job);
     }
-    */
     
     //finds the processor queue with the fewest items in it
-    fn find_shortest_queue(&self) -> usize {
+    fn find_shortest_q(&self) -> usize {
         let mut shortest = self.queues[0].len();
         let mut index: usize = 0;
         for i in 1..self.queues.len() {
@@ -145,25 +145,41 @@ mod tests {
 
     #[test]
     fn enqueue_test() {
-        
+        let mut proc = Processor::new(3);
+        let j1 = Job::new(1, 1);
+        let j2 = Job::new(2, 2);
+        let j3 = Job::new(3, 3);
+        let j4 = Job::new(4, 4);
+        proc.enqueue(j1);
+        assert_eq!(proc.queues[0][0].arrival, 1);
+        assert_eq!(proc.queues[0][0].duration, 1);
+        proc.enqueue(j2);
+        assert_eq!(proc.queues[1][0].arrival, 2);
+        assert_eq!(proc.queues[1][0].duration, 2);
+        proc.enqueue(j3);
+        assert_eq!(proc.queues[2][0].arrival, 3);
+        assert_eq!(proc.queues[2][0].duration, 3);
+        proc.enqueue(j4);
+        assert_eq!(proc.queues[0][1].arrival, 4);
+        assert_eq!(proc.queues[0][1].duration, 4);
     }
     
     #[test]
-    fn find_shortest_queue_test() {
+    fn find_shortest_q_test() {
         let mut proc = Processor::new(3);
         let j1 = Job::new(1, 1);
-        let j2 = Job::new(1, 1);
-        let j3 = Job::new(1, 1);
-        let j4 = Job::new(1, 1);
-        assert_eq!(0, proc.find_shortest_queue());
+        let j2 = Job::new(2, 2);
+        let j3 = Job::new(3, 3);
+        let j4 = Job::new(4, 4);
+        assert_eq!(0, proc.find_shortest_q());
         proc.queues[0].push(j1);
-        assert_eq!(1, proc.find_shortest_queue());
+        assert_eq!(1, proc.find_shortest_q());
         proc.queues[1].push(j2);
-        assert_eq!(2, proc.find_shortest_queue());
+        assert_eq!(2, proc.find_shortest_q());
         proc.queues[2].push(j3);
-        assert_eq!(0, proc.find_shortest_queue());
+        assert_eq!(0, proc.find_shortest_q());
         proc.queues[1].push(j4);
-        assert_eq!(0, proc.find_shortest_queue());
+        assert_eq!(0, proc.find_shortest_q());
     }
 
 }
