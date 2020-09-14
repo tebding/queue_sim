@@ -2,6 +2,7 @@
 
 use std::cell::Cell;
 
+#[derive(Clone)]
 pub struct Job {
     pub arrival: u32,
     pub duration: u32,
@@ -46,6 +47,25 @@ pub fn prep_jobs(joblist: String) -> Vec<Job> {
     }
     return jobs;
 }
+
+pub struct Processor {
+    pub queues: Vec<Vec<Job>>, 
+}
+
+impl Processor {
+    pub fn new(num: usize) -> Processor {
+        let q: Vec<Vec<Job>> = Vec::with_capacity(num);
+        Processor {
+            queues: q
+        }
+    }
+    /*
+    pub fn enqueue(job: Job) {
+        
+    }
+    */
+}
+
 
 //finds the processor queue with the fewest items in it
 /*fn find_shortest_queue(/**/) {
@@ -102,6 +122,13 @@ mod tests {
         let test_fail_input = String::from("1 a");
         let jobs = prep_jobs(test_fail_input);
     }
+    
+    #[test]
+    fn new_proc_test() {
+        let test_p = Processor::new(3);
+        assert_eq!(test_p.queues.capacity(), 3);
+    }
+    
 /*
     #[test]
     fn find_shortest_queue_test() {
