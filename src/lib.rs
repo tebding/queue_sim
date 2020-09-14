@@ -54,24 +54,38 @@ pub struct Processor {
 
 impl Processor {
     pub fn new(num: usize) -> Processor {
-        let q: Vec<Vec<Job>> = Vec::with_capacity(num);
+        let mut q: Vec<Vec<Job>> = Vec::with_capacity(num);
+        while q.len() < q.capacity() {
+            let v: Vec<Job> = Vec::new();
+            q.push(v);
+        }
         Processor {
             queues: q
         }
     }
+    
     /*
-    pub fn enqueue(job: Job) {
-        
+    pub fn enqueue(&self, job: Job) {
+        let target = find_shortest_q(self);
     }
     */
-}
-
-
-//finds the processor queue with the fewest items in it
-/*fn find_shortest_queue(/**/) {
     
+    //finds the processor queue with the fewest items in it
+    fn find_shortest_queue(&self) -> usize {
+        let mut shortest = self.queues[0].len();
+        let mut index: usize = 0;
+        for i in 1..self.queues.len() {
+            if self.queues[i].len() < shortest {
+                shortest = self.queues[i].len();
+                index = i;
+            }
+        }
+        return index;
+    }
 }
-*/
+
+
+
 
 #[cfg(test)]
 mod tests {
@@ -128,11 +142,28 @@ mod tests {
         let test_p = Processor::new(3);
         assert_eq!(test_p.queues.capacity(), 3);
     }
-    
-/*
+
     #[test]
-    fn find_shortest_queue_test() {
+    fn enqueue_test() {
         
     }
-*/
+    
+    #[test]
+    fn find_shortest_queue_test() {
+        let mut proc = Processor::new(3);
+        let j1 = Job::new(1, 1);
+        let j2 = Job::new(1, 1);
+        let j3 = Job::new(1, 1);
+        let j4 = Job::new(1, 1);
+        assert_eq!(0, proc.find_shortest_queue());
+        proc.queues[0].push(j1);
+        assert_eq!(1, proc.find_shortest_queue());
+        proc.queues[1].push(j2);
+        assert_eq!(2, proc.find_shortest_queue());
+        proc.queues[2].push(j3);
+        assert_eq!(0, proc.find_shortest_queue());
+        proc.queues[1].push(j4);
+        assert_eq!(0, proc.find_shortest_queue());
+    }
+
 }
