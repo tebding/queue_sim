@@ -74,7 +74,9 @@ fn main() {
         avg_wait = avg_wait / wait_times.len() as f32;
         
         //print iteration stats
-        println!("sum: {}\navg: {}", sum_wait, avg_wait);
-
+        println!("for {} processors:", num_procs);
+        println!("sum time waited: {}\nlongest wait time: {}\n
+                 average wait time: {}\n", sum_wait, max_wait, avg_wait);
+        
     }
 }
