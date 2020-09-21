@@ -64,7 +64,7 @@ impl Processor {
         }
     }
     
-    //takes the input job and 
+    //takes the input job and inserts it into the shortest queue
     pub fn enqueue(&mut self, job: Job) {
         let target = self.find_shortest_q();
         self.queues[target].push(job);
@@ -82,6 +82,18 @@ impl Processor {
         }
         return index;
     }
+    
+    //removes+returns the front item from the selected queue...
+    //and sets finish time for removed item and wait time for next item, if any
+    pub fn dequeue(&mut self, index: usize, time: u32) -> Job {
+        self.queues[index][0].finish.set(time);
+        if self.queues[index].len() > 1 {
+            self.queues[index][1].wait
+                .set(time - self.queues[index][1].arrival);
+        }
+        return self.queues[index].remove(0);
+    } //TODO: write test for this!
+
 }
 
 
@@ -120,6 +132,7 @@ mod tests {
     fn prep_jobs_test() {
         let test_input = String::from("1 2\n3 1");
         let jobs = prep_jobs(test_input);
+
         assert_eq!(jobs[0].arrival, 1);
         assert_eq!(jobs[0].duration, 2);
         assert_eq!(jobs[0].finish.get(), 0);
@@ -150,6 +163,7 @@ mod tests {
         let j2 = Job::new(2, 2);
         let j3 = Job::new(3, 3);
         let j4 = Job::new(4, 4);
+
         proc.enqueue(j1);
         assert_eq!(proc.queues[0][0].arrival, 1);
         assert_eq!(proc.queues[0][0].duration, 1);
@@ -171,6 +185,7 @@ mod tests {
         let j2 = Job::new(2, 2);
         let j3 = Job::new(3, 3);
         let j4 = Job::new(4, 4);
+
         assert_eq!(0, proc.find_shortest_q());
         proc.queues[0].push(j1);
         assert_eq!(1, proc.find_shortest_q());
@@ -181,5 +196,34 @@ mod tests {
         proc.queues[1].push(j4);
         assert_eq!(0, proc.find_shortest_q());
     }
-
+    
+    #[test]
+    fn dequeue_test() {
+        let mut proc = Processor::new(2);
+        let j1 = Job::new(1, 3);
+        let j2 = Job::new(2, 3);
+        let j3 = Job::new(3, 3);
+        proc.queues[0].push(j1);
+        proc.queues[1].push(j2);
+        proc.queues[0].push(j3);
+        
+        let r1 = proc.dequeue(0, 4);
+        assert_eq!(r1.arrival, 1);
+        assert_eq!(r1.duration, 3);
+        assert_eq!(r1.finish.get(), 4);
+        assert_eq!(r1.wait.get(), 0);
+        
+        let r2 = proc.dequeue(1, 5);
+        assert_eq!(r2.arrival, 2);
+        assert_eq!(r2.duration, 3);
+        assert_eq!(r2.finish.get(), 5);
+        assert_eq!(r2.wait.get(), 0);
+        
+        let r3 = proc.dequeue(0, 6);
+        assert_eq!(r3.arrival, 3);
+        assert_eq!(r3.duration, 3);
+        assert_eq!(r3.finish.get(), 6);
+        assert_eq!(r3.wait.get(), 1);
+    }
+    
 }
