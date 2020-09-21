@@ -67,6 +67,10 @@ impl Processor {
     //takes the input job and inserts it into the shortest queue
     pub fn enqueue(&mut self, job: Job) {
         let target = self.find_shortest_q();
+        if self.queues[target].len() == 0 {
+            job.wait.set(0);
+            job.finish.set(job.arrival + job.duration);
+        }
         self.queues[target].push(job);
     }
     
@@ -83,8 +87,8 @@ impl Processor {
         return index;
     }
     
-    //removes+returns the front item from the selected queue...
-    //and sets finish time for removed item and wait time for next item, if any
+    //removes+returns the front item from the selected queue and sets
+      //finish time for removed item and wait time for next item, if any
     pub fn dequeue(&mut self, index: usize, time: u32) -> Job {
         self.queues[index][0].finish.set(time);
         if self.queues[index].len() > 1 {
@@ -92,10 +96,23 @@ impl Processor {
                 .set(time - self.queues[index][1].arrival);
         }
         return self.queues[index].remove(0);
-    } //TODO: write test for this!
+    } 
+    
+    //searches the queues and returns the indices of all jobs that are finished
+    pub fn find_finished(&self, time: u32) -> Vec<u32> {
+        let mut res: Vec<u32> = Vec::new();
+        for i in 0..self.queues.len() {
+            print!("at i={}  ", i);
+            println!("queues[i][0].finish.get() = {}", self.queues[i][0].finish.get());
+            if self.queues[i][0].finish.get() == time {
+                println!("finished found");
+                res.push(i as u32); //adds index to output Vec
+            }
+        }
+        return res;
+    }
 
 }
-
 
 
 
@@ -167,15 +184,23 @@ mod tests {
         proc.enqueue(j1);
         assert_eq!(proc.queues[0][0].arrival, 1);
         assert_eq!(proc.queues[0][0].duration, 1);
+        assert_eq!(proc.queues[0][0].wait.get(), 0);
+        assert_eq!(proc.queues[0][0].finish.get(), 2);
         proc.enqueue(j2);
         assert_eq!(proc.queues[1][0].arrival, 2);
         assert_eq!(proc.queues[1][0].duration, 2);
+        assert_eq!(proc.queues[1][0].wait.get(), 0);
+        assert_eq!(proc.queues[1][0].finish.get(), 4);
         proc.enqueue(j3);
         assert_eq!(proc.queues[2][0].arrival, 3);
         assert_eq!(proc.queues[2][0].duration, 3);
+        assert_eq!(proc.queues[2][0].wait.get(), 0);
+        assert_eq!(proc.queues[2][0].finish.get(), 6);
         proc.enqueue(j4);
         assert_eq!(proc.queues[0][1].arrival, 4);
         assert_eq!(proc.queues[0][1].duration, 4);
+        assert_eq!(proc.queues[0][1].wait.get(), 0);
+        assert_eq!(proc.queues[0][1].finish.get(), 0);
     }
     
     #[test]
@@ -225,5 +250,29 @@ mod tests {
         assert_eq!(r3.finish.get(), 6);
         assert_eq!(r3.wait.get(), 1);
     }
-    
+    /*
+    #[test]
+    fn find_finished_test() {
+        let mut proc = Processor::new(3);
+        let j1 = Job::new(1, 3);
+        let j2 = Job::new(1, 3);
+        let j3 = Job::new(3, 3);
+        let j4 = Job::new(4, 3);
+        proc.enqueue
+        
+        let r1 = proc.find_finished(3);
+        assert_eq!(r1.len(), 0);
+        let r2 = proc.find_finished(4);
+        assert_eq!(r2.len(), 2);
+        assert_eq!(r2[0], 0);
+        assert_eq!(r2[1], 1);
+        let r3 = proc.find_finished(5);
+        assert_eq!(r3.len(), 0);
+        let r4 = proc.find_finished(6);
+        assert_eq!(r4.len(), 1);
+        assert_eq!(r4[0], 2);
+        let r5 = proc.find_finished(7);
+        assert_eq!(r5.len(), 1);
+        assert_eq!(r5[0], 0);
+    }*/
 }
