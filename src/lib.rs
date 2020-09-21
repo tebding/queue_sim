@@ -99,13 +99,13 @@ impl Processor {
     } 
     
     //searches the queues and returns the indices of all jobs that are finished
-    pub fn find_finished(&self, time: u32) -> Vec<u32> {
+    pub fn find_finished(&self, time: &u32) -> Vec<u32> {
         let mut res: Vec<u32> = Vec::new();
         println!("time={}", time);
         for i in 0..self.queues.len() {
             print!("at i={}  ", i);
             println!("queues[i][0].finish.get() = {}", self.queues[i][0].finish.get());
-            if self.queues[i][0].finish.get() == time {
+            if self.queues[i][0].finish.get() == *time {
                 println!("finished found");
                 res.push(i as u32); //adds index to output Vec
             }
@@ -270,9 +270,9 @@ mod tests {
         proc.queues[2].push(j3);
         proc.queues[0].push(j4);
         
-        let r1 = proc.find_finished(3);
+        let r1 = proc.find_finished(&3);
         assert_eq!(r1.len(), 0);
-        let r2 = proc.find_finished(4);
+        let r2 = proc.find_finished(&4);
         assert_eq!(r2.len(), 2);
         assert_eq!(r2[0], 0);
         assert_eq!(r2[1], 1);
@@ -282,13 +282,13 @@ mod tests {
         proc.queues[0].remove(0);
         proc.queues[0][0].wait.set(1);
         proc.queues[0][0].finish.set(6);
-        let r3 = proc.find_finished(5);
+        let r3 = proc.find_finished(&5);
         assert_eq!(r3.len(), 1);
         assert_eq!(r3[0], 2);
-        let r4 = proc.find_finished(6);
+        let r4 = proc.find_finished(&6);
         assert_eq!(r4.len(), 1);
         assert_eq!(r4[0], 0);
-        let r5 = proc.find_finished(7);
+        let r5 = proc.find_finished(&7);
         assert_eq!(r5.len(), 0);
     }
     
