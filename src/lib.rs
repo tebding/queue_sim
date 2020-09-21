@@ -89,11 +89,12 @@ impl Processor {
     
     //removes+returns the front item from the selected queue and sets
       //finish time for removed item and wait time for next item, if any
-    pub fn dequeue(&mut self, index: usize, time: u32) -> Job {
-        self.queues[index][0].finish.set(time);
+    pub fn dequeue(&mut self, index: usize, time: &u32) -> Job {
         if self.queues[index].len() > 1 {
             self.queues[index][1].wait
                 .set(time - self.queues[index][1].arrival);
+            self.queues[index][1].finish
+                .set(*time + self.queues[index][1].duration);
         }
         return self.queues[index].remove(0);
     } 
@@ -101,12 +102,8 @@ impl Processor {
     //searches the queues and returns the indices of all jobs that are finished
     pub fn find_finished(&self, time: &u32) -> Vec<u32> {
         let mut res: Vec<u32> = Vec::new();
-        println!("time={}", time);
         for i in 0..self.queues.len() {
-            print!("at i={}  ", i);
-            println!("queues[i][0].finish.get() = {}", self.queues[i][0].finish.get());
             if self.queues[i][0].finish.get() == *time {
-                println!("finished found");
                 res.push(i as u32); //adds index to output Vec
             }
         }
@@ -227,28 +224,30 @@ mod tests {
     fn dequeue_test() {
         let mut proc = Processor::new(2);
         let j1 = Job::new(1, 3);
+        j1.finish.set(4);
         let j2 = Job::new(2, 3);
+        j2.finish.set(5);
         let j3 = Job::new(3, 3);
         proc.queues[0].push(j1);
         proc.queues[1].push(j2);
         proc.queues[0].push(j3);
         
-        let r1 = proc.dequeue(0, 4);
+        let r1 = proc.dequeue(0, &4);
         assert_eq!(r1.arrival, 1);
         assert_eq!(r1.duration, 3);
         assert_eq!(r1.finish.get(), 4);
         assert_eq!(r1.wait.get(), 0);
         
-        let r2 = proc.dequeue(1, 5);
+        let r2 = proc.dequeue(1, &5);
         assert_eq!(r2.arrival, 2);
         assert_eq!(r2.duration, 3);
         assert_eq!(r2.finish.get(), 5);
         assert_eq!(r2.wait.get(), 0);
         
-        let r3 = proc.dequeue(0, 6);
+        let r3 = proc.dequeue(0, &6);
         assert_eq!(r3.arrival, 3);
         assert_eq!(r3.duration, 3);
-        assert_eq!(r3.finish.get(), 6);
+        assert_eq!(r3.finish.get(), 7);
         assert_eq!(r3.wait.get(), 1);
     }
     
