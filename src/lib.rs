@@ -147,7 +147,7 @@ mod tests {
     fn prep_jobs_test() {
         let test_input = String::from("1 2\n3 1");
         let jobs = prep_jobs(test_input);
-
+        
         assert_eq!(jobs[0].arrival, 1);
         assert_eq!(jobs[0].duration, 2);
         assert_eq!(jobs[0].finish.get(), 0);
@@ -162,7 +162,7 @@ mod tests {
     #[should_panic]
     fn prep_jobs_fail_test() {
         let test_fail_input = String::from("1 a");
-        let jobs = prep_jobs(test_fail_input);
+        let _jobs = prep_jobs(test_fail_input);
     }
     
     #[test]
