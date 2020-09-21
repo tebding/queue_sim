@@ -101,6 +101,7 @@ impl Processor {
     //searches the queues and returns the indices of all jobs that are finished
     pub fn find_finished(&self, time: u32) -> Vec<u32> {
         let mut res: Vec<u32> = Vec::new();
+        println!("time={}", time);
         for i in 0..self.queues.len() {
             print!("at i={}  ", i);
             println!("queues[i][0].finish.get() = {}", self.queues[i][0].finish.get());
@@ -250,15 +251,24 @@ mod tests {
         assert_eq!(r3.finish.get(), 6);
         assert_eq!(r3.wait.get(), 1);
     }
-    /*
+    
     #[test]
     fn find_finished_test() {
         let mut proc = Processor::new(3);
         let j1 = Job::new(1, 3);
+        j1.wait.set(0);
+        j1.finish.set(4);
         let j2 = Job::new(1, 3);
-        let j3 = Job::new(3, 3);
-        let j4 = Job::new(4, 3);
-        proc.enqueue
+        j2.wait.set(0);
+        j2.finish.set(4);
+        let j3 = Job::new(2, 3);
+        j3.wait.set(0);
+        j3.finish.set(5);
+        let j4 = Job::new(3, 3);
+        proc.queues[0].push(j1);
+        proc.queues[1].push(j2);
+        proc.queues[2].push(j3);
+        proc.queues[0].push(j4);
         
         let r1 = proc.find_finished(3);
         assert_eq!(r1.len(), 0);
@@ -266,13 +276,20 @@ mod tests {
         assert_eq!(r2.len(), 2);
         assert_eq!(r2[0], 0);
         assert_eq!(r2[1], 1);
+        //confirm 2nd element's data hasn't been set yet
+        assert_eq!(proc.queues[0][1].wait.get(), 0);
+        assert_eq!(proc.queues[0][1].finish.get(), 0);
+        proc.queues[0].remove(0);
+        proc.queues[0][0].wait.set(1);
+        proc.queues[0][0].finish.set(6);
         let r3 = proc.find_finished(5);
-        assert_eq!(r3.len(), 0);
+        assert_eq!(r3.len(), 1);
+        assert_eq!(r3[0], 2);
         let r4 = proc.find_finished(6);
         assert_eq!(r4.len(), 1);
-        assert_eq!(r4[0], 2);
+        assert_eq!(r4[0], 0);
         let r5 = proc.find_finished(7);
-        assert_eq!(r5.len(), 1);
-        assert_eq!(r5[0], 0);
-    }*/
+        assert_eq!(r5.len(), 0);
+    }
+    
 }
