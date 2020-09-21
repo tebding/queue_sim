@@ -22,9 +22,11 @@ impl Job {
        }
     }
     
-    //sets the 'finish' field to the simulated completion time
-    pub fn calc_fin(&self, time: u32) {
-        self.finish.set(self.duration + time);
+    //sets the 'finish' field to the simulated completion time and
+    //sets the 'wait' field to the simulated time waiting in the queue
+    pub fn calc_fin_wait(&self, time: &u32) {
+        self.finish.set(self.duration + *time);
+        self.wait.set(*time - self.arrival);
     }
     
     //sets the 'finish' field back to 0
@@ -91,10 +93,7 @@ impl Processor {
       //finish time for removed item and wait time for next item, if any
     pub fn dequeue(&mut self, index: usize, time: &u32) -> Job {
         if self.queues[index].len() > 1 {
-            self.queues[index][1].wait
-                .set(time - self.queues[index][1].arrival);
-            self.queues[index][1].finish
-                .set(*time + self.queues[index][1].duration);
+            self.queues[index][1].calc_fin_wait(&time);
         }
         return self.queues[index].remove(0);
     } 
@@ -128,16 +127,17 @@ mod tests {
     }
 
     #[test]
-    fn calc_fin_test() {
+    fn calc_fin_wait_test() {
         let test_job = Job::new(4, 1);
-        test_job.calc_fin(5);
+        test_job.calc_fin_wait(&5);
         assert_eq!(test_job.finish.get(), 6);
+        assert_eq!(test_job.wait.get(), 1);
     }
 
     #[test]
     fn reset_fin_test() {
         let test_job = Job::new(4, 1);
-        test_job.calc_fin(5);
+        test_job.calc_fin_wait(&5);
         assert_eq!(test_job.finish.get(), 6);
         test_job.reset_fin();
         assert_eq!(test_job.finish.get(), 0);
