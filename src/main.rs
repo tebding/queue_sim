@@ -74,7 +74,7 @@ fn main() {
         else { println!("\nfor {} processors:", num_procs); }
         println!("sum time waited: {}\nlongest wait time: {}\n\
                  average wait time: {}", sum_wait, max_wait, avg_wait);
-        if max_wait == 0 {
+        if max_wait == 0 && num_procs < job_list.len()-1 {
             println!("MAX WAIT FOR {} PROCESSORS WAS 0. FURTHER ITERATIONS REDUNDANT", num_procs);
             break;
         }
