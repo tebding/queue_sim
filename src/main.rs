@@ -38,24 +38,23 @@ fn main() {
         max_wait = 0;
         sum_wait = 0;
         jobs_list = job_list.clone();
-        
         //runs the simulation for a given number of queues
-        while wait_times.len() < wait_times.capacity() { //
+        while wait_times.len() < wait_times.capacity() {
             //first check for finished jobs to dequeue
             let finished = processor.find_finished(&time);
             if finished.len() > 0 {
                 for i in 0..finished.len() {
                     //add wait times to list
-                    wait_times.push(processor.queues[i][0].wait.get());
+                    wait_times.push(processor.queues[finished[i] as usize][0].wait.get());
                     //remove the now-finished job
                     processor.dequeue(finished[i] as usize, &time);
                 }
             }
             
             //then check for items ready to enqueue
-                while jobs_list.is_empty() == false && jobs_list[0].arrival == time {
-                    processor.enqueue(jobs_list.remove(0));
-                }
+            while jobs_list.is_empty() == false && jobs_list[0].arrival == time {
+                processor.enqueue(jobs_list.remove(0));
+            }
             time += 1;
         }
         
@@ -71,9 +70,14 @@ fn main() {
         avg_wait = avg_wait / wait_times.len() as f32;
         
         //print iteration stats
-        println!("for {} processors:", num_procs);
-        println!("sum time waited: {}\nlongest wait time: {}\n
-                 average wait time: {}\n", sum_wait, max_wait, avg_wait);
+        if num_procs == 1 { println!("\nfor 1 processor:"); }
+        else { println!("\nfor {} processors:", num_procs); }
+        println!("sum time waited: {}\nlongest wait time: {}\n\
+                 average wait time: {}", sum_wait, max_wait, avg_wait);
+        if max_wait == 0 {
+            println!("MAX WAIT FOR {} PROCESSORS WAS 0. FURTHER ITERATIONS REDUNDANT", num_procs);
+            break;
+        }
         
     }
 }
