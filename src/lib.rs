@@ -102,8 +102,10 @@ impl Processor {
     pub fn find_finished(&self, time: &u32) -> Vec<u32> {
         let mut res: Vec<u32> = Vec::new();
         for i in 0..self.queues.len() {
-            if self.queues[i][0].finish.get() == *time {
-                res.push(i as u32); //adds index to output Vec
+            if self.queues[i].is_empty() == false {
+                if self.queues[i][0].finish.get() == *time {
+                    res.push(i as u32); //adds index to output Vec
+                }
             }
         }
         return res;

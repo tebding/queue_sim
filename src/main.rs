@@ -41,24 +41,21 @@ fn main() {
         
         //runs the simulation for a given number of queues
         while wait_times.len() < wait_times.capacity() { //
-            
             //first check for finished jobs to dequeue
             let finished = processor.find_finished(&time);
             if finished.len() > 0 {
                 for i in 0..finished.len() {
                     //add wait times to list
                     wait_times.push(processor.queues[i][0].wait.get());
-                    
                     //remove the now-finished job
                     processor.dequeue(finished[i] as usize, &time);
                 }
             }
             
             //then check for items ready to enqueue
-            while jobs_list[0].arrival == time {
-                processor.enqueue(jobs_list.remove(0));
-            }
-            
+                while jobs_list.is_empty() == false && jobs_list[0].arrival == time {
+                    processor.enqueue(jobs_list.remove(0));
+                }
             time += 1;
         }
         
